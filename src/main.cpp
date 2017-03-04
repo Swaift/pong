@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <ctime>
+#include <cstdlib>
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -13,8 +15,12 @@
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT), "My window");
-
     sf::Clock clock;
+    srand((int) time(0));
+    int gameOver = 0;
+
+    // game over screen
+    // TODO
 
     // calculate paddle coordinates based on top left corner
     sf::RectangleShape lPaddle(sf::Vector2f(PADDLE_WIDTH,PADDLE_HEIGHT));
@@ -23,7 +29,13 @@ int main() {
     rPaddle.setPosition(WINDOW_WIDTH - PADDLE_WIDTH - 20, WINDOW_HEIGHT/2 - PADDLE_HEIGHT/2);
 
     sf::CircleShape ball(BALL_RADIUS);
-    ball.setPosition(WINDOW_WIDTH/2 - BALL_RADIUS/2, WINDOW_HEIGHT/2 - BALL_RADIUS/2);
+    int randomBallPos = (rand() % WINDOW_HEIGHT) + 1;
+    int balldx, balldy;
+    do {
+        balldx = (rand() % PADDLE_STEP * 2) + 1 - PADDLE_STEP;
+        balldy = (rand() % PADDLE_STEP * 2) + 1 - PADDLE_STEP;
+    } while (abs(balldx) <= 1 || abs(balldy) <= 1);
+    ball.setPosition(WINDOW_WIDTH/2 - BALL_RADIUS/2, randomBallPos);
 
     int rPaddleDir = DOWN;
 
@@ -36,29 +48,46 @@ int main() {
         }
 
         // 60 fps is approximately 0.16 seconds per frame
-        if (clock.getElapsedTime().asSeconds() > 0.016f) {
+        if (clock.getElapsedTime().asSeconds() > 0.016f && !gameOver) {
             // AI for rPaddle
-            if (rPaddle.getGlobalBounds().top + PADDLE_HEIGHT == WINDOW_HEIGHT) {
+            if (rPaddle.getGlobalBounds().top + PADDLE_HEIGHT >= WINDOW_HEIGHT) {
                 rPaddleDir = UP;
-            } else if (rPaddle.getGlobalBounds().top == 0) {
+            } else if (rPaddle.getGlobalBounds().top <= 0) {
                 rPaddleDir = DOWN;
             }
             rPaddle.move(0, rPaddleDir);
 
             // player paddle controls
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
-                    lPaddle.getGlobalBounds().top != 0) {
+                    lPaddle.getGlobalBounds().top > 0)
+            {
                 lPaddle.move(0, UP);
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
-                    lPaddle.getGlobalBounds().top + PADDLE_HEIGHT != WINDOW_HEIGHT) {
+                    lPaddle.getGlobalBounds().top + PADDLE_HEIGHT < WINDOW_HEIGHT)
+            {
                 lPaddle.move(0, DOWN);
             }
+
+            // move ball
+            if ((ball.getGlobalBounds().top <= 0 && balldy < 0) ||
+                (ball.getGlobalBounds().top + BALL_RADIUS * 2 >= WINDOW_HEIGHT && balldy > 0)) {
+                balldy = -balldy;
+            }
+            if (ball.getGlobalBounds().intersects(lPaddle.getGlobalBounds()) ||
+                ball.getGlobalBounds().intersects(rPaddle.getGlobalBounds())) {
+                balldx = -balldx;
+            }
+            ball.move(balldx, balldy);
         }
 
         window.clear(sf::Color::Black);
-        window.draw(lPaddle);
-        window.draw(rPaddle);
-        window.draw(ball);
+        if (!gameOver) {
+            window.draw(lPaddle);
+            window.draw(rPaddle);
+            window.draw(ball);
+        } else {
+            //window.draw(scoreScreen);
+        }
         window.display();
     }
 
