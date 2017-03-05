@@ -2,6 +2,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <cmath>
+#include "states.h"
 
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 800
@@ -16,27 +17,52 @@
 #define R_PADDLE_ACCEL 7 // lower is more acceleration
 #define BALL_STEP 10
 
-float getPaddleCenter(sf::Shape& paddle) {
+float play::getPaddleCenter(sf::Shape& paddle) {
     return paddle.getPosition().y + PADDLE_LENGTH/2;
 }
 
-float getBallCenter(sf::Shape& ball) {
+float play::getBallCenter(sf::Shape& ball) {
     return ball.getPosition().y + BALL_RADIUS;
 }
 
-float getBallOffset(sf::Shape& ball, sf::Shape& paddle) {
-    return getBallCenter(ball) - getPaddleCenter(paddle);
+float play::getBallOffset(sf::Shape& ball, sf::Shape& paddle) {
+    return play::getBallCenter(ball) - play::getPaddleCenter(paddle);
 }
 
-void processPlay(sf::RenderWindow& window,
-                 sf::Shape& topWall,
-                 sf::Shape& bottomWall,
-                 sf::Shape& lPaddle,
-                 sf::Shape& rPaddle,
-                 sf::Shape& ball,
-                 float& ballDx,
-                 float& ballDy)
+void initializePlay() {
+    using namespace play;
+
+    // create line dividing play areas
+    divider[0] = sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, 0));
+    divider[1] = sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, WINDOW_HEIGHT));
+
+    // create top and bottom walls
+    topWall = sf::RectangleShape(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS));
+    bottomWall = sf::RectangleShape(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS));
+    topWall.setPosition(0, 0);
+    bottomWall.setPosition(0, WINDOW_HEIGHT - WALL_THICKNESS);
+
+    // create paddles
+    lPaddle = sf::RectangleShape(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH));
+    rPaddle = sf::RectangleShape(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH));
+    lPaddle.setPosition(PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
+    rPaddle.setPosition(WINDOW_WIDTH - PADDLE_THICKNESS - PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
+
+    // place ball randomly along center axis
+    ball = sf::CircleShape (BALL_RADIUS);
+    ball.setPosition(WINDOW_WIDTH/2 - BALL_RADIUS/2, rand() % (WINDOW_HEIGHT - WALL_THICKNESS * 2 - BALL_RADIUS * 2) + WALL_THICKNESS);
+    ballDx = -BALL_STEP;
+    // ballDy goes either straight or at either angle toward the player
+    ballDy = (rand() % 3 - 1) * BALL_STEP/2;
+
+}
+
+void processPlay(sf::RenderWindow& window)
 {
+    using namespace play;
+
+    srand((int) time(NULL));
+
     // rPaddle AI
     if (std::fabs(getBallOffset(ball, rPaddle)) > PADDLE_LENGTH/2)
     {
@@ -69,6 +95,7 @@ void processPlay(sf::RenderWindow& window,
 
     window.draw(topWall);
     window.draw(bottomWall);
+    window.draw(divider, 2, sf::Lines);
     window.draw(lPaddle);
     window.draw(rPaddle);
     window.draw(ball);
@@ -85,26 +112,8 @@ int main() {
     };
     State currentState = State::PLAY;
     State nextState = State::PLAY;
-    
-    // create top and bottom walls
-    sf::RectangleShape topWall(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS));
-    sf::RectangleShape bottomWall(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS));
-    topWall.setPosition(0, 0);
-    bottomWall.setPosition(0, WINDOW_HEIGHT - WALL_THICKNESS);
 
-    // create paddles
-    sf::RectangleShape lPaddle(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH));
-    sf::RectangleShape rPaddle(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH));
-    lPaddle.setPosition(PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
-    rPaddle.setPosition(WINDOW_WIDTH - PADDLE_THICKNESS - PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
-
-    // place ball randomly along center axis
-    srand((int) time(NULL));
-    sf::CircleShape ball(BALL_RADIUS);
-    ball.setPosition(WINDOW_WIDTH/2 - BALL_RADIUS/2, rand() % (WINDOW_HEIGHT - WALL_THICKNESS * 2 - BALL_RADIUS * 2) + WALL_THICKNESS);
-    float ballDx = -BALL_STEP;
-    // ballDy can either be -BALL_STEP/2, 0, or BALL_STEP/2
-    float ballDy = (rand() % 3 - 1) * BALL_STEP/2;
+    initializePlay();
 
     while (window.isOpen()) {
         sf::Event event;
@@ -113,6 +122,7 @@ int main() {
                 window.close();
             }
         }
+
         window.clear(sf::Color::Black);
 
         currentState = nextState;
@@ -122,14 +132,7 @@ int main() {
                 nextState = State::SPLASH;
                 break;
             case State::PLAY:
-                processPlay(window,
-                            topWall,
-                            bottomWall,
-                            lPaddle,
-                            rPaddle,
-                            ball,
-                            ballDx,
-                            ballDy);
+                processPlay(window);
                 nextState = State::PLAY;
                 break;
             case State::GAMEOVER:

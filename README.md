@@ -1,9 +1,14 @@
 # SFML Demo Games
 
 ## Pong
-- [  ] Line dividing player areas
-- [  ] Splash screen
-- [  ] Restart game after each point
-- [  ] Display score on play screen
-- [  ] Game over screen with win/loss (first to 5 points wins)
-- [  ] ~~Make ball and AI paddle get faster over time~~
+- [x] Refactor to use namespaces for each state
+- [x] Line dividing player areas
+- [ ] Convert #define directives to constant variables
+- [ ] Move play state initalization/processing to states.cpp
+- [ ] Generalize Makefile
+- [ ] Splash screen
+- [ ] Restart game after each point
+- [ ] Display score on play screen
+- [ ] Game over screen with win/loss (first to 5 points wins)
+- [ ] ~~Make ball and AI paddle get faster over time~~
+- [ ] Sound effects on game start, ball bounce, point, and win/loss
