@@ -1,17 +1,30 @@
-all: game
+SDIR := src
+IDIR := inc
+ODIR := obj
 
-game: bin/main.o bin/states.o
-	g++ bin/main.o bin/states.o -o game -lsfml-graphics -lsfml-window -lsfml-system
-bin/main.o: src/main.cpp inc/states.h
-	g++ src/main.cpp -o bin/main.o -c -g -Wall -Wextra -std=c++11 -Iinc
-bin/states.o: src/states.cpp inc/states.h
-	g++ src/states.cpp -o bin/states.o -c -g -Wall -Wextra -std=c++11 -Iinc
+SOURCES := $(wildcard $(SDIR)/*.cpp)
+INCLUDE := $(wildcard $(IDIR)/*.hpp)
+OBJECTS := $(addprefix $(ODIR)/, $(notdir $(SOURCES:.cpp=.o)))
+
+CXX := g++
+LD := g++
+CXXFLAGS := -c -g -Wall -Wextra -std=c++11 -I$(IDIR)
+LDFLAGS := -lsfml-graphics -lsfml-window -lsfml-system
+
+TARGET := game
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(LD) $^ -o $@ $(LDFLAGS)
+$(ODIR)/%.o: $(SDIR)/%.cpp $(INCLUDE)
+	$(CXX) $< -o $@ $(CXXFLAGS)
 
 .PHONY: test clean
 
-test: game
-	./game
+test: $(TARGET)
+	./$(TARGET)
 
 clean:
-	rm -f game
-	rm -f bin/*
+	@rm -f $(TARGET)
+	@rm -f $(OBJECTS)

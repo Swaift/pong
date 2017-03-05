@@ -3,9 +3,9 @@
 ## Pong
 - [x] Refactor to use namespaces for each state
 - [x] Line dividing player areas
-- [ ] Convert #define directives to constant variables
-- [ ] Move play state initalization/processing to states.cpp
-- [ ] Generalize Makefile
+- [x] Convert #define directives to constant variables
+- [x] Move play state initalization/processing to states.cpp
+- [x] Generalize Makefile
 - [ ] Splash screen
 - [ ] Restart game after each point
 - [ ] Display score on play screen
