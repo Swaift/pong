@@ -8,19 +8,17 @@
 
 namespace play {
     sf::Vertex divider[2];
-    sf::RectangleShape topWall;
-    sf::RectangleShape bottomWall;
-    sf::RectangleShape lPaddle;
-    sf::RectangleShape rPaddle;
+    sf::RectangleShape topWall, bottomWall, leftWall, rightWall, lPaddle, rPaddle;
     sf::CircleShape ball;
-    float ballDx;
-    float ballDy;
-    
+    float ballDx, ballDy;
+    int lScore, rScore;
+
     float getPaddleCenter(sf::Shape&);
     float getBallCenter(sf::Shape&);
     float getBallOffset(sf::Shape&, sf::Shape&);
     void initializePlay();
     void executePlay(sf::RenderWindow&);
+    void resetBall();
 };
 
 float play::getPaddleCenter(sf::Shape& paddle) {
@@ -35,16 +33,20 @@ float play::getBallOffset(sf::Shape& ball, sf::Shape& paddle) {
     return getBallCenter(ball) - getPaddleCenter(paddle);
 }
 
+void play::resetBall() {
+    // place ball randomly along center axis
+    ball.setPosition(WINDOW_WIDTH/2 - BALL_RADIUS/2, std::rand() % (WINDOW_HEIGHT - WALL_THICKNESS * 2 - BALL_RADIUS * 2) + WALL_THICKNESS);
+    ballDx = -BALL_STEP;
+    // ballDy goes either straight or at either angle toward the player
+    ballDy = (std::rand() % 3 - 1) * BALL_STEP/2;
+}
+
 void play::initializePlay() {
     std::srand((int) std::time(NULL));
 
     // create line dividing play areas
     divider[0] = sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, 0));
     divider[1] = sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, WINDOW_HEIGHT));
-    //sf::Vertex play::divider[] = {
-        //sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, 0)),
-        //sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, WINDOW_HEIGHT))
-    //};
 
     // create top and bottom walls
     topWall = sf::RectangleShape(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS));
@@ -52,19 +54,25 @@ void play::initializePlay() {
     topWall.setPosition(0, 0);
     bottomWall.setPosition(0, WINDOW_HEIGHT - WALL_THICKNESS);
 
+    // create offscreen left and right walls
+    leftWall = sf::RectangleShape(sf::Vector2f(WALL_THICKNESS, WINDOW_HEIGHT));
+    rightWall = sf::RectangleShape(sf::Vector2f(WALL_THICKNESS, WINDOW_HEIGHT));
+    leftWall.setPosition(-WALL_THICKNESS, 0);
+    rightWall.setPosition(WINDOW_WIDTH, 0);
+
     // create paddles
     lPaddle = sf::RectangleShape(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH));
     rPaddle = sf::RectangleShape(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH));
     lPaddle.setPosition(PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
     rPaddle.setPosition(WINDOW_WIDTH - PADDLE_THICKNESS - PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
 
-    // place ball randomly along center axis
+    // create ball
     ball = sf::CircleShape (BALL_RADIUS);
-    ball.setPosition(WINDOW_WIDTH/2 - BALL_RADIUS/2, std::rand() % (WINDOW_HEIGHT - WALL_THICKNESS * 2 - BALL_RADIUS * 2) + WALL_THICKNESS);
-    ballDx = -BALL_STEP;
-    // ballDy goes either straight or at either angle toward the player
-    ballDy = (std::rand() % 3 - 1) * BALL_STEP/2;
+    resetBall();
 
+    // reset scores
+    lScore = 0;
+    rScore = 0;
 }
 
 void play::executePlay(sf::RenderWindow& window)
@@ -97,7 +105,16 @@ void play::executePlay(sf::RenderWindow& window)
         ballDy = getBallOffset(ball, rPaddle)/MAX_BALL_OFFSET * BALL_STEP;
         ballDx = -ballDx;
     }
-    ball.move(ballDx, ballDy);
+    // check if ball hit either goal
+    if (ball.getGlobalBounds().intersects(leftWall.getGlobalBounds())) {
+        rScore++;
+        resetBall();
+    } else if (ball.getGlobalBounds().intersects(rightWall.getGlobalBounds())) {
+        lScore++;
+        resetBall();
+    } else {
+        ball.move(ballDx, ballDy);
+    }
 
     window.draw(topWall);
     window.draw(bottomWall);

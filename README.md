@@ -6,9 +6,10 @@
 - [x] Convert #define directives to constant variables
 - [x] Move play state initalization/processing to states.cpp
 - [x] Generalize Makefile
-- [ ] Splash screen
-- [ ] Restart game after each point
+- [x] Restart game after each point
+- [ ] Wrap state machine in class
 - [ ] Display score on play screen
 - [ ] Game over screen with win/loss (first to 5 points wins)
+- [ ] Splash screen
 - [ ] ~~Make ball and AI paddle get faster over time~~
 - [ ] Sound effects on game start, ball bounce, point, and win/loss
