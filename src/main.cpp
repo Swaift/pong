@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "params.hpp"
-#include "states.hpp"
+#include "play.hpp"
 #include <cstdlib>
 
 int main() {

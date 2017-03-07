@@ -8,7 +8,7 @@ OBJECTS := $(addprefix $(ODIR)/, $(notdir $(SOURCES:.cpp=.o)))
 
 CXX := g++
 LD := g++
-CXXFLAGS := -c -g -Wall -Wextra -std=c++11 -I$(IDIR)
+CXXFLAGS := -c -g -Wall -Wextra -Wpedantic -Werror -std=c++11 -I$(IDIR)
 LDFLAGS := -lsfml-graphics -lsfml-window -lsfml-system
 
 TARGET := game

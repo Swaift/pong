@@ -1,5 +1,5 @@
-#ifndef STATES_H
-#define STATES_H
+#ifndef PLAY_HPP
+#define PLAY_HPP
 
 #include "SFML/Graphics.hpp"
 #include "params.hpp"
@@ -19,7 +19,7 @@ namespace play {
     void initializePlay();
     void executePlay(sf::RenderWindow&);
     void resetBall();
-};
+}
 
 float play::getPaddleCenter(sf::Shape& paddle) {
     return paddle.getPosition().y + PADDLE_LENGTH/2;
@@ -124,4 +124,4 @@ void play::executePlay(sf::RenderWindow& window)
     window.draw(ball);
 }
 
-#endif
+#endif // PLAY_HPP
