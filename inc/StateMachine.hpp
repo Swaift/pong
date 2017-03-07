@@ -5,13 +5,18 @@
 
 class StateMachine {
     public:
-        StateMachine(State* currentState);
+        StateMachine();
         ~StateMachine();
+
         void changeState(State* newState);
-        void executeCurrentState();
+        template<typename T>
+        void execute(T& input) {
+            currentState->execute(input);
+        }
     private:
-        StateMachine(const StateMachine&);
-        StateMachine& operator=(const StateMachine&);
+        StateMachine(const StateMachine&) = delete;
+        StateMachine& operator=(const StateMachine&) = delete;
+
         State* currentState;
 };
 

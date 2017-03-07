@@ -1,9 +1,12 @@
 #ifndef STATE_HPP
 #define STATE_HPP
 
+#include <SFML/Graphics.hpp>
+
 class State {
     public:
-        virtual void execute() = 0;
+        virtual ~State() {}
+        virtual void execute(sf::RenderWindow& window) = 0;
 };
 
 #endif // STATE_HPP

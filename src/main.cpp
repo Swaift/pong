@@ -1,21 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include "params.hpp"
-#include "play.hpp"
+#include "StateMachine.hpp"
 #include <cstdlib>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT), "My window");
-
-    // initialize state machine
-    enum class State {
-        SPLASH,
-        PLAY,
-        GAMEOVER
-    };
-    State currentState = State::PLAY;
-    State nextState = State::PLAY;
-
-    play::initializePlay();
+    StateMachine machine;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -26,23 +16,7 @@ int main() {
         }
 
         window.clear(sf::Color::Black);
-
-        currentState = nextState;
-        switch (currentState) {
-            case State::SPLASH:
-                // TODO
-                nextState = State::SPLASH;
-                break;
-            case State::PLAY:
-                play::executePlay(window);
-                nextState = State::PLAY;
-                break;
-            case State::GAMEOVER:
-                // TODO
-                nextState = State::GAMEOVER;
-                break;
-        }
-
+        machine.execute(window);
         window.display();
     }
 

@@ -1,8 +1,9 @@
 #include "StateMachine.hpp"
 #include "State.hpp"
+#include "PlayState.hpp"
 
-StateMachine::StateMachine(State* currentState) {
-    this->currentState = currentState;
+StateMachine::StateMachine() {
+    this->currentState = new PlayState();
 }
 
 StateMachine::~StateMachine() {
@@ -12,8 +13,4 @@ StateMachine::~StateMachine() {
 void StateMachine::changeState(State* newState) {
     delete currentState;
     currentState = newState;
-}
-
-void StateMachine::executeCurrentState() {
-    currentState->execute();
 }
