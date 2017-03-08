@@ -2,41 +2,37 @@
 #include "params.hpp"
 #include "State.hpp"
 #include "PlayState.hpp"
+#include "Ball.hpp"
 #include <cstdlib>
 #include <cmath>
 
-PlayState::PlayState() {
+PlayState::PlayState() 
+    : divider({
+            sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, 0)),
+            sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, WINDOW_HEIGHT))
+            })
+    , topWall(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS))
+    , bottomWall(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS))
+    , leftWall(sf::Vector2f(WALL_THICKNESS, WINDOW_HEIGHT))
+    , rightWall(sf::Vector2f(WALL_THICKNESS, WINDOW_HEIGHT))
+    , lPaddle(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH))
+    , rPaddle(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH))
+    , ball(sf::CircleShape(BALL_RADIUS))
+    , ballDx(0)
+    , ballDy(0)
+{
     std::srand((int) std::time(NULL));
 
-    // create line dividing play areas
-    divider[0] = sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, 0));
-    divider[1] = sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, WINDOW_HEIGHT));
-
-    // create top and bottom walls
-    topWall = sf::RectangleShape(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS));
-    bottomWall = sf::RectangleShape(sf::Vector2f(WINDOW_WIDTH, WALL_THICKNESS));
     topWall.setPosition(0, 0);
     bottomWall.setPosition(0, WINDOW_HEIGHT - WALL_THICKNESS);
 
-    // create offscreen left and right walls
-    leftWall = sf::RectangleShape(sf::Vector2f(WALL_THICKNESS, WINDOW_HEIGHT));
-    rightWall = sf::RectangleShape(sf::Vector2f(WALL_THICKNESS, WINDOW_HEIGHT));
     leftWall.setPosition(-WALL_THICKNESS, 0);
     rightWall.setPosition(WINDOW_WIDTH, 0);
 
-    // create paddles
-    lPaddle = sf::RectangleShape(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH));
-    rPaddle = sf::RectangleShape(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH));
     lPaddle.setPosition(PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
     rPaddle.setPosition(WINDOW_WIDTH - PADDLE_THICKNESS - PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
 
-    // create ball
-    ball = sf::CircleShape (BALL_RADIUS);
     resetBall();
-
-    // reset scores
-    lScore = 0;
-    rScore = 0;
 }
 
 void PlayState::execute(sf::RenderWindow& window) {
@@ -70,10 +66,8 @@ void PlayState::execute(sf::RenderWindow& window) {
     }
     // check if ball hit either goal
     if (ball.getGlobalBounds().intersects(leftWall.getGlobalBounds())) {
-        rScore++;
         resetBall();
     } else if (ball.getGlobalBounds().intersects(rightWall.getGlobalBounds())) {
-        lScore++;
         resetBall();
     } else {
         ball.move(ballDx, ballDy);

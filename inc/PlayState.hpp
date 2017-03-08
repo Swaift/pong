@@ -17,12 +17,10 @@ class PlayState: public State {
         sf::RectangleShape topWall, bottomWall, leftWall, rightWall, lPaddle, rPaddle;
         sf::CircleShape ball;
         float ballDx, ballDy;
-        int lScore, rScore;
 
         float getPaddleCenter(sf::Shape& paddle);
         float getBallCenter();
         float getBallOffset(sf::Shape& paddle);
-
         void resetBall();
 };
 
