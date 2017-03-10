@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "params.hpp"
 #include "State.hpp"
+#include "Ball.hpp"
 #include <cstdlib>
 #include <cmath>
 
@@ -15,13 +16,11 @@ class PlayState: public State {
     private:
         sf::Vertex divider[2];
         sf::RectangleShape topWall, bottomWall, leftWall, rightWall, lPaddle, rPaddle;
-        sf::CircleShape ball;
-        float ballDx, ballDy;
+        sf::Ball ball;
 
         float getPaddleCenter(sf::Shape& paddle);
         float getBallCenter();
         float getBallOffset(sf::Shape& paddle);
-        void resetBall();
 };
 
 #endif // PLAYSTATE_HPP

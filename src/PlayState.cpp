@@ -3,8 +3,7 @@
 #include "State.hpp"
 #include "PlayState.hpp"
 #include "Ball.hpp"
-#include <cstdlib>
-#include <cmath>
+#include <cmath> // fabs()
 
 PlayState::PlayState() 
     : divider({
@@ -17,12 +16,8 @@ PlayState::PlayState()
     , rightWall(sf::Vector2f(WALL_THICKNESS, WINDOW_HEIGHT))
     , lPaddle(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH))
     , rPaddle(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH))
-    , ball(sf::CircleShape(BALL_RADIUS))
-    , ballDx(0)
-    , ballDy(0)
+    , ball(sf::Ball(BALL_RADIUS))
 {
-    std::srand((int) std::time(NULL));
-
     topWall.setPosition(0, 0);
     bottomWall.setPosition(0, WINDOW_HEIGHT - WALL_THICKNESS);
 
@@ -31,8 +26,6 @@ PlayState::PlayState()
 
     lPaddle.setPosition(PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
     rPaddle.setPosition(WINDOW_WIDTH - PADDLE_THICKNESS - PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
-
-    resetBall();
 }
 
 void PlayState::execute(sf::RenderWindow& window) {
@@ -52,25 +45,25 @@ void PlayState::execute(sf::RenderWindow& window) {
 
     // bounce ball off walls
     if (ball.getGlobalBounds().intersects(topWall.getGlobalBounds())) {
-        ballDy = std::fabs(ballDy);
+        ball.setDy(std::fabs(ball.getDy()));
     } else if (ball.getGlobalBounds().intersects(bottomWall.getGlobalBounds())) {
-        ballDy = -std::fabs(ballDy);
+        ball.setDy(-std::fabs(ball.getDy()));
     }
     // bounce ball off paddles
     if (ball.getGlobalBounds().intersects(lPaddle.getGlobalBounds())) {
-        ballDy = getBallOffset(lPaddle)/MAX_BALL_OFFSET * BALL_STEP;
-        ballDx = -ballDx;
+        ball.setDy(getBallOffset(lPaddle)/MAX_BALL_OFFSET * BALL_STEP);
+        ball.setDx(-ball.getDx());
     } else if (ball.getGlobalBounds().intersects(rPaddle.getGlobalBounds())) {
-        ballDy = getBallOffset(rPaddle)/MAX_BALL_OFFSET * BALL_STEP;
-        ballDx = -ballDx;
+        ball.setDy(getBallOffset(rPaddle)/MAX_BALL_OFFSET * BALL_STEP);
+        ball.setDx(-ball.getDx());
     }
     // check if ball hit either goal
     if (ball.getGlobalBounds().intersects(leftWall.getGlobalBounds())) {
-        resetBall();
+        ball.reset();
     } else if (ball.getGlobalBounds().intersects(rightWall.getGlobalBounds())) {
-        resetBall();
+        ball.reset();
     } else {
-        ball.move(ballDx, ballDy);
+        ball.move(ball.getDx(), ball.getDy());
     }
 
     window.draw(topWall);
@@ -91,12 +84,4 @@ inline float PlayState::getBallCenter() {
 
 inline float PlayState::getBallOffset(sf::Shape& paddle) {
     return getBallCenter() - getPaddleCenter(paddle);
-}
-
-void PlayState::resetBall() {
-    // place ball randomly along center axis
-    ball.setPosition(WINDOW_WIDTH/2 - BALL_RADIUS/2, std::rand() % (WINDOW_HEIGHT - WALL_THICKNESS * 2 - BALL_RADIUS * 2) + WALL_THICKNESS);
-    ballDx = -BALL_STEP;
-    // ballDy goes either straight or at either angle toward the player
-    ballDy = (std::rand() % 3 - 1) * BALL_STEP/2;
 }
