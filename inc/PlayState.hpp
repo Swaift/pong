@@ -10,7 +10,7 @@ class PlayState: public State {
     public:
         PlayState();
         void execute(sf::RenderWindow& window);
-        void display(sf::RenderWindow& window);
+        void draw(sf::RenderWindow& window);
     private:
         sf::Vertex divider[2];
         sf::RectangleShape

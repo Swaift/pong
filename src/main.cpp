@@ -16,7 +16,8 @@ int main() {
 
         window.clear(sf::Color::Black);
         machine.execute(window);
-        machine.display(window);
+        machine.draw(window);
+        machine.changeState();
         window.display();
     }
 

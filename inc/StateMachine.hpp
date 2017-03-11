@@ -9,9 +9,9 @@ class StateMachine {
         StateMachine();
         ~StateMachine();
 
-        void changeState(State* newState);
         void execute(sf::RenderWindow& window);
-        void display(sf::RenderWindow& window);
+        void draw(sf::RenderWindow& window);
+        void changeState();
     private:
         StateMachine(const StateMachine&) = delete;
         StateMachine& operator=(const StateMachine&) = delete;

@@ -15,7 +15,6 @@ const int BALL_STEP = 10;
 const int MAX_BALL_OFFSET = PADDLE_LENGTH/2 + BALL_RADIUS;
 
 const int SPACING = 20;
-const int FONT_SIZE = 100;
 const int WAIT_TIME = 100;
 
 #endif // CONSTANTS_HPP

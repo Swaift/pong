@@ -4,10 +4,12 @@
 #include "PlayState.hpp"
 #include "Ball.hpp"
 #include "Score.hpp"
+#include "GameOverState.hpp"
 #include <cmath> // fabs()
 
 PlayState::PlayState() 
-    : divider({
+    : State()
+    , divider({
             sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, 0)),
             sf::Vertex(sf::Vector2f(WINDOW_WIDTH/2, WINDOW_HEIGHT))
             })
@@ -21,7 +23,7 @@ PlayState::PlayState()
     , font()
     , lScore()
     , rScore()
-    , wait(0)
+    , wait(WAIT_TIME)
 {
     topWall.setPosition(0, 0);
     bottomWall.setPosition(0, WINDOW_HEIGHT - WALL_THICKNESS);
@@ -35,11 +37,13 @@ PlayState::PlayState()
     font.loadFromFile("PressStart2P.ttf");
 
     lScore.setFont(font);
+    lScore.setCharacterSize(100);
+    lScore.setPosition(WINDOW_WIDTH/2 - lScore.getLocalBounds().width - 8, WALL_THICKNESS + SPACING);
+
     rScore.setFont(font);
-    lScore.setCharacterSize(FONT_SIZE);
-    rScore.setCharacterSize(FONT_SIZE);
-    lScore.setPosition(WINDOW_WIDTH/2 + SPACING, WALL_THICKNESS + SPACING);
-    rScore.setPosition(WINDOW_WIDTH/2 - rScore.getLocalBounds().width - 8, WALL_THICKNESS + SPACING);
+    rScore.setCharacterSize(100);
+    rScore.setPosition(WINDOW_WIDTH/2 + SPACING, WALL_THICKNESS + SPACING);
+
 }
 
 void PlayState::execute(sf::RenderWindow& window) {
@@ -70,11 +74,11 @@ void PlayState::execute(sf::RenderWindow& window) {
     }
     // reset ball and pause after each point
     if (ball.getGlobalBounds().intersects(leftWall.getGlobalBounds())) {
-        lScore.setScore(lScore.getScore() + 1);
+        rScore.setScore(rScore.getScore() + 1);
         wait = WAIT_TIME;
         ball.reset();
     } else if (ball.getGlobalBounds().intersects(rightWall.getGlobalBounds())) {
-        rScore.setScore(rScore.getScore() + 1);
+        lScore.setScore(lScore.getScore() + 1);
         wait = WAIT_TIME;
         ball.reset();
     } else if (wait > 0) {
@@ -82,9 +86,15 @@ void PlayState::execute(sf::RenderWindow& window) {
     } else {
         ball.move(ball.getDx(), ball.getDy());
     }
+    // check for win/lose (first to 5 points)
+    if (lScore.getScore() >= 5) {
+        setNextState(new GameOverState(true));
+    } else if (rScore.getScore() >= 5) {
+        setNextState(new GameOverState(false));
+    }
 }
 
-void PlayState::display(sf::RenderWindow& window) {
+void PlayState::draw(sf::RenderWindow& window) {
     window.draw(topWall);
     window.draw(bottomWall);
     window.draw(divider, 2, sf::Lines);
