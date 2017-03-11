@@ -1,6 +1,7 @@
 #ifndef STATEMACHINE_HPP
 #define STATEMACHINE_HPP
 
+#include <SFML/Graphics.hpp>
 #include "State.hpp"
 
 class StateMachine {
@@ -9,10 +10,8 @@ class StateMachine {
         ~StateMachine();
 
         void changeState(State* newState);
-        template<typename T>
-        void execute(T& input) {
-            currentState->execute(input);
-        }
+        void execute(sf::RenderWindow& window);
+        void display(sf::RenderWindow& window);
     private:
         StateMachine(const StateMachine&) = delete;
         StateMachine& operator=(const StateMachine&) = delete;

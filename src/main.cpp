@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
-#include "params.hpp"
+#include "constants.hpp"
 #include "StateMachine.hpp"
-#include <cstdlib>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT), "My window");
@@ -17,6 +16,7 @@ int main() {
 
         window.clear(sf::Color::Black);
         machine.execute(window);
+        machine.display(window);
         window.display();
     }
 

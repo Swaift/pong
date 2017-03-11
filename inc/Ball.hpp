@@ -12,6 +12,7 @@ namespace sf {
             float getDy();
             void setDx(float dx);
             void setDy(float dy);
+            float getCenter();
         private:
             float dx, dy;
     };

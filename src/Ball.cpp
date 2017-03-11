@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "params.hpp"
+#include "constants.hpp"
 #include "Ball.hpp"
 #include <cstdlib> // srand() rand()
 #include <ctime> // time()
@@ -27,16 +27,16 @@ void sf::Ball::reset() {
 float sf::Ball::getDx() {
     return dx;
 }
-
 float sf::Ball::getDy() {
     return dy;
 }
-
 void sf::Ball::setDx(float dx) {
     this->dx = dx;
 }
-
 void sf::Ball::setDy(float dy) {
     this->dy = dy;
 }
 
+float sf::Ball::getCenter() {
+    return getPosition().y + BALL_RADIUS;
+}

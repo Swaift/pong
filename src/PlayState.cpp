@@ -1,8 +1,9 @@
 #include <SFML/Graphics.hpp>
-#include "params.hpp"
+#include "constants.hpp"
 #include "State.hpp"
 #include "PlayState.hpp"
 #include "Ball.hpp"
+#include "Score.hpp"
 #include <cmath> // fabs()
 
 PlayState::PlayState() 
@@ -17,6 +18,10 @@ PlayState::PlayState()
     , lPaddle(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH))
     , rPaddle(sf::Vector2f(PADDLE_THICKNESS, PADDLE_LENGTH))
     , ball(sf::Ball(BALL_RADIUS))
+    , font()
+    , lScore()
+    , rScore()
+    , wait(0)
 {
     topWall.setPosition(0, 0);
     bottomWall.setPosition(0, WINDOW_HEIGHT - WALL_THICKNESS);
@@ -24,13 +29,22 @@ PlayState::PlayState()
     leftWall.setPosition(-WALL_THICKNESS, 0);
     rightWall.setPosition(WINDOW_WIDTH, 0);
 
-    lPaddle.setPosition(PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
-    rPaddle.setPosition(WINDOW_WIDTH - PADDLE_THICKNESS - PADDLE_SPACE, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
+    lPaddle.setPosition(SPACING, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
+    rPaddle.setPosition(WINDOW_WIDTH - PADDLE_THICKNESS - SPACING, WINDOW_HEIGHT/2 - PADDLE_LENGTH/2);
+
+    font.loadFromFile("PressStart2P.ttf");
+
+    lScore.setFont(font);
+    rScore.setFont(font);
+    lScore.setCharacterSize(FONT_SIZE);
+    rScore.setCharacterSize(FONT_SIZE);
+    lScore.setPosition(WINDOW_WIDTH/2 + SPACING, WALL_THICKNESS + SPACING);
+    rScore.setPosition(WINDOW_WIDTH/2 - rScore.getLocalBounds().width - 8, WALL_THICKNESS + SPACING);
 }
 
 void PlayState::execute(sf::RenderWindow& window) {
-    // rPaddle AI
-    if (std::fabs(getBallOffset(rPaddle)) > PADDLE_LENGTH/2)
+    // rPaddle AI (do not move if pausing after point)
+    if (std::fabs(getBallOffset(rPaddle)) > PADDLE_LENGTH/2 && wait == 0)
     {
         rPaddle.move(0, getBallOffset(rPaddle)/R_PADDLE_ACCEL);
     }
@@ -57,31 +71,35 @@ void PlayState::execute(sf::RenderWindow& window) {
         ball.setDy(getBallOffset(rPaddle)/MAX_BALL_OFFSET * BALL_STEP);
         ball.setDx(-ball.getDx());
     }
-    // check if ball hit either goal
+    // reset ball and pause after each point
     if (ball.getGlobalBounds().intersects(leftWall.getGlobalBounds())) {
+        lScore.setScore(lScore.getScore() + 1);
+        wait = WAIT_TIME;
         ball.reset();
     } else if (ball.getGlobalBounds().intersects(rightWall.getGlobalBounds())) {
+        rScore.setScore(rScore.getScore() + 1);
+        wait = WAIT_TIME;
         ball.reset();
+    } else if (wait > 0) {
+        wait--;
     } else {
         ball.move(ball.getDx(), ball.getDy());
     }
+}
 
+void PlayState::display(sf::RenderWindow& window) {
     window.draw(topWall);
     window.draw(bottomWall);
     window.draw(divider, 2, sf::Lines);
     window.draw(lPaddle);
     window.draw(rPaddle);
-    window.draw(ball);
-}
-
-inline float PlayState::getPaddleCenter(sf::Shape& paddle) {
-    return paddle.getPosition().y + PADDLE_LENGTH/2;
-}
-
-inline float PlayState::getBallCenter() {
-    return ball.getPosition().y + BALL_RADIUS;
+    window.draw(lScore);
+    window.draw(rScore);
+    if (wait == 0) {
+        window.draw(ball);
+    }
 }
 
 inline float PlayState::getBallOffset(sf::Shape& paddle) {
-    return getBallCenter() - getPaddleCenter(paddle);
+    return ball.getCenter() - (paddle.getPosition().y + PADDLE_LENGTH/2);
 }
