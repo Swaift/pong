@@ -48,14 +48,11 @@ void PlayState::execute(sf::RenderWindow& window) {
     {
         rPaddle.move(0, getBallOffset(rPaddle)/R_PADDLE_ACCEL);
     }
+    restrictPaddle(rPaddle);
 
     // player paddle y-position same as mouse unless out of screen
     lPaddle.setPosition(lPaddle.getPosition().x, sf::Mouse::getPosition(window).y - PADDLE_LENGTH/2);
-    if (lPaddle.getPosition().y < topWall.getPosition().y + WALL_THICKNESS) {
-        lPaddle.setPosition(lPaddle.getPosition().x, topWall.getPosition().y + WALL_THICKNESS);
-    } else if (lPaddle.getPosition().y + PADDLE_LENGTH > bottomWall.getPosition().y) {
-        lPaddle.setPosition(lPaddle.getPosition().x, bottomWall.getPosition().y - PADDLE_LENGTH);
-    }
+    restrictPaddle(lPaddle);
 
     // bounce ball off walls
     if (ball.getGlobalBounds().intersects(topWall.getGlobalBounds())) {
@@ -66,10 +63,10 @@ void PlayState::execute(sf::RenderWindow& window) {
     // bounce ball off paddles
     if (ball.getGlobalBounds().intersects(lPaddle.getGlobalBounds())) {
         ball.setDy(getBallOffset(lPaddle)/MAX_BALL_OFFSET * BALL_STEP);
-        ball.setDx(-ball.getDx());
+        ball.setDx(std::fabs(ball.getDx()));
     } else if (ball.getGlobalBounds().intersects(rPaddle.getGlobalBounds())) {
         ball.setDy(getBallOffset(rPaddle)/MAX_BALL_OFFSET * BALL_STEP);
-        ball.setDx(-ball.getDx());
+        ball.setDx(-std::fabs(ball.getDx()));
     }
     // reset ball and pause after each point
     if (ball.getGlobalBounds().intersects(leftWall.getGlobalBounds())) {
@@ -100,6 +97,14 @@ void PlayState::display(sf::RenderWindow& window) {
     }
 }
 
-inline float PlayState::getBallOffset(sf::Shape& paddle) {
+void PlayState::restrictPaddle(sf::Shape& paddle) {
+    if (paddle.getPosition().y < topWall.getPosition().y + WALL_THICKNESS) {
+        paddle.setPosition(paddle.getPosition().x, topWall.getPosition().y + WALL_THICKNESS);
+    } else if (paddle.getPosition().y + PADDLE_LENGTH > bottomWall.getPosition().y) {
+        paddle.setPosition(paddle.getPosition().x, bottomWall.getPosition().y - PADDLE_LENGTH);
+    }
+}
+
+float PlayState::getBallOffset(sf::Shape& paddle) {
     return ball.getCenter() - (paddle.getPosition().y + PADDLE_LENGTH/2);
 }

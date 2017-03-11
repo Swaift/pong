@@ -25,6 +25,7 @@ class PlayState: public State {
         sf::Score lScore, rScore;
         int wait;
 
+        void restrictPaddle(sf::Shape& paddle);
         float getBallOffset(sf::Shape& paddle);
 };
 

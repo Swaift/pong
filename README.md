@@ -11,10 +11,10 @@
 - [x] Wrap ball/score in class
 - [x] Display score on play screen
 - [x] Pause for 2 seconds after each point
+- [x] Stop right paddle from leaving play area
+- [x] ~~Fix bug with ball not bouncing off left end of top wall~~ (due to bug in paddle collision) 
 - [ ] Game over screen with win/loss (first to 5 points wins)
 - [ ] Splash screen
 - [ ] Sound effects on game start, ball bounce, point, and win/loss
-- [ ] Implement edge-based collision detection
-- [ ] Stop right paddle from leaving play area
-- [ ] ~~Fix bug with ball not bouncing off left end of top wall~~ (likely due to lack of edge-based collision) 
+- [ ] ~~Implement edge-based collision detection~~ (not necessary)
 - [ ] ~~Make ball and AI paddle get faster over time~~ (not worth it)
