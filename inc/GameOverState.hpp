@@ -2,6 +2,7 @@
 #define GAMEOVERSTATE_HPP
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "State.hpp"
 
 class GameOverState: public State {
@@ -13,6 +14,9 @@ class GameOverState: public State {
         sf::Font font;
         sf::Text gameResultText;
         sf::Text playAgainText;
+        sf::SoundBuffer pointBuffer;
+        sf::Sound pointSound;
+        bool firstFrame;
 };
 
 #endif // GAMEOVERSTATE_HPP

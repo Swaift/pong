@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "constants.hpp"
 #include "GameOverState.hpp"
 #include "PlayState.hpp"
@@ -8,6 +9,9 @@ GameOverState::GameOverState(bool win)
     , font()
     , gameResultText()
     , playAgainText()
+    , pointBuffer()
+    , pointSound()
+    , firstFrame(true)
 {
     font.loadFromFile("PressStart2P.ttf");
 
@@ -32,10 +36,17 @@ GameOverState::GameOverState(bool win)
             playAgainText.getLocalBounds().top + playAgainText.getLocalBounds().height/2
             );
     playAgainText.setPosition(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + SPACING * 4);
+
+    pointBuffer.loadFromFile("point.wav");
+    pointSound.setBuffer(pointBuffer);
 }
 
 void GameOverState::execute(sf::RenderWindow& window) {
     (void)window;
+    if (firstFrame) {
+        pointSound.play();
+        firstFrame = false;
+    }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
         setNextState(new PlayState());
     }

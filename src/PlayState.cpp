@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "constants.hpp"
 #include "State.hpp"
 #include "PlayState.hpp"
@@ -24,6 +25,12 @@ PlayState::PlayState()
     , lScore()
     , rScore()
     , wait(WAIT_TIME)
+    , hitWallBuffer()
+    , hitPaddleBuffer()
+    , pointBuffer()
+    , hitWallSound()
+    , hitPaddleSound()
+    , pointSound()
 {
     topWall.setPosition(0, 0);
     bottomWall.setPosition(0, WINDOW_HEIGHT - WALL_THICKNESS);
@@ -44,6 +51,13 @@ PlayState::PlayState()
     rScore.setCharacterSize(100);
     rScore.setPosition(WINDOW_WIDTH/2 + SPACING, WALL_THICKNESS + SPACING);
 
+    hitWallBuffer.loadFromFile("hitWall.wav");
+    hitPaddleBuffer.loadFromFile("hitPaddle.wav");
+    pointBuffer.loadFromFile("point.wav");
+
+    hitWallSound.setBuffer(hitWallBuffer);
+    hitPaddleSound.setBuffer(hitPaddleBuffer);
+    pointSound.setBuffer(pointBuffer);
 }
 
 void PlayState::execute(sf::RenderWindow& window) {
@@ -60,24 +74,30 @@ void PlayState::execute(sf::RenderWindow& window) {
 
     // bounce ball off walls
     if (ball.getGlobalBounds().intersects(topWall.getGlobalBounds())) {
+        hitWallSound.play();
         ball.setDy(std::fabs(ball.getDy()));
     } else if (ball.getGlobalBounds().intersects(bottomWall.getGlobalBounds())) {
+        hitWallSound.play();
         ball.setDy(-std::fabs(ball.getDy()));
     }
     // bounce ball off paddles
     if (ball.getGlobalBounds().intersects(lPaddle.getGlobalBounds())) {
+        hitPaddleSound.play();
         ball.setDy(getBallOffset(lPaddle)/MAX_BALL_OFFSET * BALL_STEP);
         ball.setDx(std::fabs(ball.getDx()));
     } else if (ball.getGlobalBounds().intersects(rPaddle.getGlobalBounds())) {
+        hitPaddleSound.play();
         ball.setDy(getBallOffset(rPaddle)/MAX_BALL_OFFSET * BALL_STEP);
         ball.setDx(-std::fabs(ball.getDx()));
     }
     // reset ball and pause after each point
     if (ball.getGlobalBounds().intersects(leftWall.getGlobalBounds())) {
+        pointSound.play();
         rScore.setScore(rScore.getScore() + 1);
         wait = WAIT_TIME;
         ball.reset();
     } else if (ball.getGlobalBounds().intersects(rightWall.getGlobalBounds())) {
+        pointSound.play();
         lScore.setScore(lScore.getScore() + 1);
         wait = WAIT_TIME;
         ball.reset();

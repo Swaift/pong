@@ -15,6 +15,7 @@
 - [x] Fix bug with ball not bouncing off left end of top wall (due to bug in paddle collision) 
 - [x] Game over screen with win/loss (first to 5 points wins)
 - [x] Splash screen
-- [ ] Sound effects on game start, ball bounce, point, and win/loss
+- [x] Sound effects on game start, ball bounce, point, and win/loss
+- [x] Set constant framerate for all monitors
 - [ ] ~~Implement edge-based collision detection~~ (not necessary)
 - [ ] ~~Make ball and AI paddle get faster over time~~ (makes gameplay too hard)

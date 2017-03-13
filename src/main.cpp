@@ -4,6 +4,7 @@
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT), "My window");
+    window.setFramerateLimit(60);
     StateMachine machine;
 
     while (window.isOpen()) {

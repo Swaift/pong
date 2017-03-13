@@ -2,6 +2,7 @@
 #define PLAYSTATE_HPP
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "State.hpp"
 #include "Ball.hpp"
 #include "Score.hpp"
@@ -24,6 +25,8 @@ class PlayState: public State {
         sf::Font font;
         sf::Score lScore, rScore;
         int wait;
+        sf::SoundBuffer hitWallBuffer, hitPaddleBuffer, pointBuffer;
+        sf::Sound hitWallSound, hitPaddleSound, pointSound;
 
         void restrictPaddle(sf::Shape& paddle);
         float getBallOffset(sf::Shape& paddle);
