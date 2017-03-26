@@ -8,7 +8,7 @@ const int WALL_THICKNESS = 20;
 
 const int PADDLE_THICKNESS = 20;
 const int PADDLE_LENGTH = 80;
-const int R_PADDLE_ACCEL = 5; // lower is more acceleration
+const int R_PADDLE_ACCEL = 6; // lower is more acceleration
 
 const int BALL_RADIUS = 10;
 const int BALL_STEP = 15;

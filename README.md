@@ -1,10 +1,14 @@
 # Pong
 
+## Dependencies
+- SFML 2.0 ('sudo apt-get install libsfml-dev')
+
+## Screenshots
 ![Title Screen](screenshot1.png?raw=true "Title Screen")
 ![Gameplay](screenshot2.png?raw=true "Gameplay")
 ![Game Over](screenshot3.png?raw=true "Game Over")
 
-## TODO:
+## TODO
 - [x] Refactor to use namespaces for each state
 - [x] Line dividing player areas
 - [x] Convert #define directives to constant variables

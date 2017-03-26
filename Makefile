@@ -17,6 +17,9 @@ all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	$(LD) $^ -o $@ $(LDFLAGS)
+$(OBJECTS): | $(ODIR)
+$(ODIR):
+	mkdir -p $(ODIR)
 $(ODIR)/%.o: $(SDIR)/%.cpp $(INCLUDE)
 	$(CXX) $< -o $@ $(CXXFLAGS)
 
