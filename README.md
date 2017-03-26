@@ -1,7 +1,7 @@
 # Pong
 
 ## Dependencies
-- SFML 2.0 ('sudo apt-get install libsfml-dev')
+- SFML 2.0 (<code>sudo apt-get install libsfml-dev</code>)
 
 ## Screenshots
 ![Title Screen](screenshot1.png?raw=true "Title Screen")
